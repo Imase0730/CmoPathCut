@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <cmo>Resources\Models\</cmo>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup>
+    <MeshContentTask>
+      <ContentOutput>$(cmo)%(Filename).cmo</ContentOutput>
+    </MeshContentTask>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="cmo">
+      <Value>$(cmo)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>
