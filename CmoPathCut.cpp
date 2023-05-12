@@ -90,7 +90,7 @@ int wmain(int argc, wchar_t* argv[])
 {
     if (argc < 2)
     {
-        std::cout << "使い方：DDSPathCut.exe </f fbxのフォルダ> </c cmoのフォルダ> [/b] [/a] [/s]" << std::endl;
+        std::cout << "使い方：CmoPathCut.exe </f fbxのフォルダ> </c cmoのフォルダ> [/b] [/a] [/s]" << std::endl;
         std::cout << "/b ボーン情報有り" << std::endl;
         std::cout << "/a アニメション情報有り" << std::endl;
         std::cout << "/s 最後の_の前の文字列をカットします" << std::endl;
