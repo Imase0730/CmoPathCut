@@ -118,6 +118,7 @@ int wmain(int argc, wchar_t* argv[])
     for (int i = 0; i < 7 && i < argc - 1; i++)
     {
         if (option[i] == L"/f")
+
         {
             // 変換前のFBXのフォルダ名
             srcfolder = argv[i + 2];
@@ -336,6 +337,14 @@ void Convert(std::wstring outfolder, std::wstring fname, bool bone, bool anime, 
                 // テクスチャ名の文字数
                 uint32_t cnt = 0;
                 ifs.read((char*)&cnt, sizeof(uint32_t));
+
+                if (cnt == 0)
+                {
+                    // テクスチャの文字数
+                    ofs.write((char*)&cnt, sizeof(uint32_t));
+                    continue;
+                }
+
                 uint32_t size = sizeof(wchar_t) * cnt;
 
                 // テクスチャ名
