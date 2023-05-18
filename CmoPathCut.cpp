@@ -31,6 +31,7 @@ bool getFileNames(std::wstring folderPath, std::vector<std::wstring>& file_names
 void Convert(std::wstring outfolder, std::wstring fname, bool bone, bool anime, std::wstring path);
 std::wstring GetCurrentPath();
 std::vector<size_t> FindAll(const std::wstring str, const std::wstring subStr);
+void Replace(std::wstring& str, std::wstring target, std::wstring replacement);
 
 //-----------------------------------------------------------------------------------------//
 // cmoで使用されているデータの定義
@@ -156,6 +157,17 @@ int wmain(int argc, wchar_t* argv[])
             // srcfolderの "../" 部分を削除する
             srcfolder.erase(rc[i], 3);
         }
+        rc = FindAll(srcfolder, L"..\\");
+        for (size_t i = 0; i < rc.size(); i++)
+        {
+            // srcfolderの "..\\" の数に応じてpathを修正する
+            size_t pos = path.rfind(L"_");
+            path.erase(pos);
+            // srcfolderの "..\\" 部分を削除する
+            srcfolder.erase(rc[i], 3);
+        }
+        Replace(srcfolder, L"/", L"_");
+        Replace(srcfolder, L"\\", L"_");
         path += L"_";
         path += srcfolder;
         path += L"_";
