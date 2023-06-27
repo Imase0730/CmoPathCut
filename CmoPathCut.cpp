@@ -10,6 +10,7 @@
 //     ※ ボーンやアニメーションクリップの入ったFBXの場合はオプション [/b] [/a] を指定してください。
 //     ※ [/s]はcmoを別のプロジェクトで作成した場合パス名がわからないので、最後の"_"の前の文字列をカットします。
 //        [/s]を使用する場合はDDSのファイル名に"_"を使用しないでください。
+//     ※ FBXとテクスチャは同じフォルダに入れてください。
 //
 // Date: 2023.5.13
 // Author: Hideyasu Imase
@@ -400,78 +401,77 @@ void Convert(std::wstring outfolder, std::wstring fname, bool bone, bool anime, 
                 // テクスチャ名
                 ofs.write((char*)str.data(), sizeof(wchar_t) * cnt);
             }
+        }
 
-            // ボーンの有無
-            uint8_t bSkeleton = 0;
-            ifs.read((char*)&bSkeleton, sizeof(uint8_t));
-            ofs.write((char*)&bSkeleton, sizeof(uint8_t));
+        // ボーンの有無
+        uint8_t bSkeleton = 0;
+        ifs.read((char*)&bSkeleton, sizeof(uint8_t));
+        ofs.write((char*)&bSkeleton, sizeof(uint8_t));
 
-            // サブメッシュ
-            uint32_t nSubmesh = ReadWriteCnt(ifs, ofs);
-            ReadWrite(ifs, ofs, sizeof(SubMesh) * nSubmesh);
+        // サブメッシュ
+        uint32_t nSubmesh = ReadWriteCnt(ifs, ofs);
+        ReadWrite(ifs, ofs, sizeof(SubMesh) * nSubmesh);
 
-            // インデックスバッファ
-            uint32_t nIBs = ReadWriteCnt(ifs, ofs);
-            for (size_t j = 0; j < nIBs; ++j)
-            {
-                uint32_t nIndexes = ReadWriteCnt(ifs, ofs);
-                ReadWrite(ifs, ofs, nIndexes * sizeof(uint16_t));
-            }
+        // インデックスバッファ
+        uint32_t nIBs = ReadWriteCnt(ifs, ofs);
+        for (size_t j = 0; j < nIBs; ++j)
+        {
+            uint32_t nIndexes = ReadWriteCnt(ifs, ofs);
+            ReadWrite(ifs, ofs, nIndexes * sizeof(uint16_t));
+        }
 
-            // 頂点バッファ
-            uint32_t nVBs = ReadWriteCnt(ifs, ofs);
-            for (size_t j = 0; j < nVBs; ++j)
+        // 頂点バッファ
+        uint32_t nVBs = ReadWriteCnt(ifs, ofs);
+        for (size_t j = 0; j < nVBs; ++j)
+        {
+            uint32_t nVerts = ReadWriteCnt(ifs, ofs);
+            ReadWrite(ifs, ofs, sizeof(VertexPositionNormalTangentColorTexture) * nVerts);
+        }
+
+        // スキンアニメーション用頂点バッファ
+        uint32_t nSkinVBs = ReadWriteCnt(ifs, ofs);
+        if (nSkinVBs)
+        {
+            for (size_t j = 0; j < nSkinVBs; ++j)
             {
                 uint32_t nVerts = ReadWriteCnt(ifs, ofs);
-                ReadWrite(ifs, ofs, sizeof(VertexPositionNormalTangentColorTexture) * nVerts);
+                ReadWrite(ifs, ofs, sizeof(SkinningVertex) * nVerts);
+            }
+        }
+
+        // メッシュの付加情報
+        ReadWrite(ifs, ofs, sizeof(MeshExtents));
+
+        // ボーンの入ったモデル
+        if (bSkeleton && bone == true)
+        {
+            // ボーン数
+            uint32_t nBones = ReadWriteCnt(ifs, ofs);
+
+            for (uint32_t j = 0; j < nBones; ++j)
+            {
+                // ボーン名
+                nName = ReadWriteCnt(ifs, ofs);
+                ReadWrite(ifs, ofs, sizeof(wchar_t) * nName);
+                // ボーン情報
+                ReadWrite(ifs, ofs, sizeof(Bone));
             }
 
-            // スキンアニメーション用頂点バッファ
-            uint32_t nSkinVBs = ReadWriteCnt(ifs, ofs);
-            if (nSkinVBs)
+            // アニメーション情報
+            if (anime == true)
             {
-                for (size_t j = 0; j < nSkinVBs; ++j)
-                {
-                    uint32_t nVerts = ReadWriteCnt(ifs, ofs);
-                    ReadWrite(ifs, ofs, sizeof(SkinningVertex) * nVerts);
-                }
-            }
-
-            // メッシュの付加情報
-            ReadWrite(ifs, ofs, sizeof(MeshExtents));
-
-            // ボーンの入ったモデル
-            if (bSkeleton && bone == true)
-            {
-                // ボーン数
-                uint32_t nBones = ReadWriteCnt(ifs, ofs);
-
-                for (uint32_t j = 0; j < nBones; ++j)
-                {
-                    // ボーン名
-                    nName = ReadWriteCnt(ifs, ofs);
-                    ReadWrite(ifs, ofs, sizeof(wchar_t) * nName);
-                    // ボーン情報
-                    ReadWrite(ifs, ofs, sizeof(Bone));
-                }
-
-                // アニメーション情報
-                if (anime == true)
-                {
-                    // 現在の位置を取得する
-                    size_t cur = ifs.tellg();
-                    // ファイルポインタを末尾に移動
-                    ifs.seekg(0, std::ios::end);
-                    // 終端の位置を取得する
-                    size_t end = ifs.tellg();
-                    // 残りのサイズを取得する
-                    size_t size = end - cur;
-                    // 元の位置へ戻す
-                    ifs.seekg(cur, std::ios::beg);
-                    // 残りを読み込み＆書き出し
-                    ReadWrite(ifs, ofs, size);
-                }
-
+                // 現在の位置を取得する
+                size_t cur = ifs.tellg();
+                // ファイルポインタを末尾に移動
+                ifs.seekg(0, std::ios::end);
+                // 終端の位置を取得する
+                size_t end = ifs.tellg();
+                // 残りのサイズを取得する
+                size_t size = end - cur;
+                // 元の位置へ戻す
+                ifs.seekg(cur, std::ios::beg);
+                // 残りを読み込み＆書き出し
+                ReadWrite(ifs, ofs, size);
             }
         }
     }

@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="FBX">
+      <UniqueIdentifier>{94f60d67-d530-4b67-8c22-ff84420eda94}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CmoPathCut.cpp">
@@ -23,7 +26,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <MeshContentTask Include="FBX\box.fbx" />
-    <MeshContentTask Include="FBX\Dice.fbx" />
+    <MeshContentTask Include="FBX\Tank.fbx">
+      <Filter>FBX</Filter>
+    </MeshContentTask>
   </ItemGroup>
 </Project>

@@ -136,8 +136,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <MeshContentTask Include="FBX\box.fbx" />
-    <MeshContentTask Include="FBX\Dice.fbx" />
+    <MeshContentTask Include="FBX\Tank.fbx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
